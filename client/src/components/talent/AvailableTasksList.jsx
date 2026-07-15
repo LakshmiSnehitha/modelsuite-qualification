@@ -10,7 +10,8 @@ const AvailableTasksList = ({ tasks, onClaimed }) => {
   }
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
+    // <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
       {tasks.map((task) => (
         <TaskCard key={task._id} task={task} showClaimButton onClaimed={onClaimed} />
       ))}
