@@ -12,13 +12,21 @@ const inputCls = 'w-full bg-bg-input border border-border rounded-[10px] px-4 py
 const labelCls = 'text-[11px] font-semibold uppercase tracking-[0.6px] text-text-muted group-focus-within:text-primary transition-colors duration-200';
 
 const RegisterPage = () => {
-  const [name, setName]       = useState('');
-  const [email, setEmail]     = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole]       = useState('Talent');
-  const { login }  = useAuth();
-  const navigate   = useNavigate();
+  // const [name, setName]       = useState('');
+  // const [email, setEmail]     = useState('');
+  // const [password, setPassword] = useState('');
+  // const [role, setRole]       = useState('Talent');
+  // const { login }  = useAuth();
+  // const navigate   = useNavigate();
+const [name, setName] = useState('');
+const [email, setEmail] = useState('');
+const [password, setPassword] = useState('');
+const [role, setRole] = useState('Talent');
 
+const [step, setStep] = useState(1);
+const [selectedSkills, setSelectedSkills] = useState([]);
+const { login } = useAuth();
+const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -46,39 +54,204 @@ const RegisterPage = () => {
           <h1 className="text-[26px] font-bold tracking-tight text-text-primary mb-1.5">Assessment Portal</h1>
           <p className="text-sm text-text-muted">Create your intern account</p>
         </div>
+<div className="mb-6">
 
+  <div className="flex justify-between text-xs text-text-muted mb-2">
+    <span>Step {step} of 3</span>
+    <span>{Math.round((step / 3) * 100)}%</span>
+  </div>
+
+  <div className="w-full h-2 bg-bg-input rounded-full overflow-hidden">
+
+    <div
+      className="h-full bg-primary transition-all duration-500"
+      style={{ width: `${(step / 3) * 100}%` }}
+    />
+
+  </div>
+
+</div>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 relative z-10 animate-fade-slide" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
-          <div className="flex flex-col gap-2 group">
+          {/* <div className="flex flex-col gap-2 group">
             <label className={labelCls} htmlFor="name">Full Name</label>
             <input id="name" type="text" placeholder="Jane Doe"
               value={name} onChange={(e) => setName(e.target.value)} required className={inputCls} />
-          </div>
+          </div> */}
+          {step === 1 && (
+  <div className="flex flex-col gap-2 group">
+    <label className={labelCls} htmlFor="name">
+      Full Name
+    </label>
 
-          <div className="flex flex-col gap-2 group">
+    <input
+      id="name"
+      type="text"
+      placeholder="Jane Doe"
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+      // required
+      required={step === 1}
+      className={inputCls}
+    />
+  </div>
+)}
+
+          {/* <div className="flex flex-col gap-2 group">
             <label className={labelCls} htmlFor="reg-email">Email address</label>
             <input id="reg-email" type="email" placeholder="you@company.com"
               value={email} onChange={(e) => setEmail(e.target.value)} required className={inputCls} />
-          </div>
+          </div> */}
+          {step === 2 && (
+  <div className="flex flex-col gap-2 group">
+    <label className={labelCls} htmlFor="reg-email">
+      Email address
+    </label>
 
-          <div className="flex flex-col gap-2 group">
-            <label className={labelCls} htmlFor="reg-password">Password</label>
-            <input id="reg-password" type="password" placeholder="••••••••"
-              value={password} onChange={(e) => setPassword(e.target.value)} required className={inputCls} />
-          </div>
+    <input
+      id="reg-email"
+      type="email"
+      placeholder="you@company.com"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      // required
+      required={step === 2}
+      className={inputCls}
+    />
+  </div>
+)}
+{step === 3 && (
+  <div className="space-y-6">
 
-          <div className="flex flex-col gap-2 group">
-            <label className={labelCls} htmlFor="role">Role</label>
-            <select id="role" value={role} onChange={(e) => setRole(e.target.value)}
-              className={`${inputCls} custom-select cursor-pointer`}>
-              <option value="Talent">Talent</option>
-              <option value="Admin">Admin</option>
-            </select>
-          </div>
+    {/* Password */}
+    <div className="flex flex-col gap-2 group">
+      <label className={labelCls} htmlFor="reg-password">
+        Password
+      </label>
 
-          <button type="submit"
+      <input
+        id="reg-password"
+        type="password"
+        placeholder="••••••••"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required={step === 3}
+        className={inputCls}
+      />
+    </div>
+         
+
+
+    {/* Skills */}
+    <div>
+      <label className={labelCls}>Choose Your Skills</label>
+
+      <div className="grid grid-cols-2 gap-3 mt-3">
+        {/* {["React", "Node.js", "UI/UX", "Python", "Java", "Testing"].map((skill) => (
+          <button
+            key={skill}
+            type="button"
+            className="py-3 rounded-full border border-border hover:bg-blue-600 hover:text-white transition-all duration-300"
+          >
+            {skill}
+          </button>
+        ))} */}
+        {["React", "Node.js", "UI/UX", "Python", "Java", "Testing"].map((skill) => (
+  <button
+    key={skill}
+    type="button"
+    onClick={() => {
+      if (selectedSkills.includes(skill)) {
+        setSelectedSkills(selectedSkills.filter((s) => s !== skill));
+      } else {
+        setSelectedSkills([...selectedSkills, skill]);
+      }
+    }}
+    className={`py-3 rounded-full border transition-all duration-300 ${
+      selectedSkills.includes(skill)
+        ? "bg-blue-600 text-white border-blue-600 scale-105"
+        : "border-border hover:bg-blue-600 hover:text-white"
+    }`}
+  >
+    {skill}
+  </button>
+))}
+      </div>
+    </div>
+
+    {/* Role */}
+    <div className="flex flex-col gap-2 group">
+      <label className={labelCls} htmlFor="role">
+        Role
+      </label>
+
+      <select
+        id="role"
+        value={role}
+        onChange={(e) => setRole(e.target.value)}
+        className={`${inputCls} custom-select cursor-pointer`}
+      >
+        <option value="Talent">Talent</option>
+        <option value="Admin">Admin</option>
+      </select>
+    </div>
+
+  </div>
+)}  
+          {/* <button type="submit"
             className="mt-2 w-full py-3.5 rounded-[10px] text-[15px] font-semibold text-white cursor-pointer btn-gradient border-none hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200">
             Setup Profile
-          </button>
+          </button> */}
+          <div className="flex justify-between mt-4">
+
+  {step > 1 && (
+    <button
+      type="button"
+      // onClick={() => setStep(step - 1)}
+      onClick={(e) => {
+  e.preventDefault();
+  setStep((prev) => prev + 1);
+}}
+      className="px-6 py-3 rounded-lg border border-border text-text-primary"
+    >
+      Back
+    </button>
+  )}
+
+  {step < 3 ? (
+    <button
+      type="button"
+      // onClick={() => setStep(step + 1)}
+      onClick={() => {
+  if (step === 1 && !name.trim()) {
+    toast.error("Please enter your name");
+    return;
+  }
+
+  if (step === 2 && !email.trim()) {
+    toast.error("Please enter your email");
+    return;
+  }
+
+  setStep(step + 1);
+}}
+      className="ml-auto px-6 py-3 rounded-lg btn-gradient text-white"
+    >
+      Next
+    </button>
+  ) : (
+    <button
+      type="submit"
+      className="ml-auto px-6 py-3 rounded-lg btn-gradient text-white"
+    >
+      Finish
+    </button>
+  )}
+
+</div>
+
+
+
+
         </form>
 
         <p className="mt-7 text-sm text-text-muted text-center relative z-10 animate-fade-slide" style={{ animationDelay: '0.25s', animationFillMode: 'both' }}>
