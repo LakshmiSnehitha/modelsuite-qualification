@@ -1,5 +1,6 @@
 ﻿import { useState } from 'react';
 import { updateTask, fetchTalents } from '../../api/tasks';
+import toast from 'react-hot-toast';
 
 const STATUS_OPTIONS = ['Open', 'Claimed', 'Submitted', 'Approved', 'Rejected'];
 const inputCls = 'w-full bg-bg-input border border-border rounded-lg px-3.5 py-2.5 text-sm text-text-primary outline-none placeholder:text-[#4e4a6e] focus:border-primary focus:ring-[3px] focus:ring-primary/15 transition-all font-sans resize-y';
@@ -25,10 +26,12 @@ const EditTaskModal = ({ task, onClose, onUpdated }) => {
     e.preventDefault();
     try {
       const { data } = await updateTask(task._id, { ...form, assignedTo: form.assignedTo || null });
+      toast.success('Task updated successfully');
       onUpdated(data);
       onClose();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to update task');
+      // alert(err.response?.data?.message || 'Failed to update task');
+       toast.error(err.response?.data?.message || 'Failed to update task');
     }
   };
 

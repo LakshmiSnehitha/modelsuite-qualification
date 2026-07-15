@@ -1,4 +1,5 @@
 import { deleteTask } from '../../api/tasks';
+import toast from 'react-hot-toast';
 
 /* ── SVG Action Icons ── */
 const IconEdit = () => (
@@ -47,9 +48,14 @@ const TasksTable = ({ tasks, onEdit, onRefresh }) => {
     try {
       await deleteTask(id);
       onRefresh();
-    } catch {
-      alert('Failed to delete task');
-    }
+      toast.success('Task deleted successfully');
+    } 
+    // catch {
+    //   toast.error('Failed to delete task');
+    // }
+    catch (err) {
+    toast.error(err.response?.data?.message || 'Failed to delete task');
+  }
   };
 
   if (tasks.length === 0) {
