@@ -129,9 +129,19 @@ const SubmissionsPage = () => {
                       </td>
 
                       {/* Submitted at — raw ISO */}
-                      <td className={`${tdCls} text-text-muted text-[13px] whitespace-nowrap`}>
+                      {/* <td className={`${tdCls} text-text-muted text-[13px] whitespace-nowrap`}>
                         {sub.createdAt}
-                      </td>
+                      </td>  */}
+                      {/* Submitted at — formatted date */}
+ <td className={`${tdCls} text-text-muted text-[13px] whitespace-nowrap`}>
+  {new Date(sub.createdAt).toLocaleString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })}
+</td>
 
                       {/* Review status */}
                       <td className={tdCls}>
