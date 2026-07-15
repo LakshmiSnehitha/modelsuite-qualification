@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import Sidebar from '../../components/admin/Sidebar';
-import SubmissionReviewModal from '../../components/admin/SubmissionReviewModal';
-import { fetchAllSubmissions } from '../../api/submissions';
+// import SubmissionReviewModal from '../../components/admin/SubmissionReviewModal';
+// import { fetchAllSubmissions } from '../../api/submissions';
 import toast from 'react-hot-toast';
+import SubmissionDetails from '../../components/admin/SubmissionDetails';
+// import { reviewSubmission } from '../../api/submissions';
+import { fetchAllSubmissions, reviewSubmission } from '../../api/submissions';
 
 const REVIEW_STATUS_CLASS = {
   Pending:  'status-badge-Submitted',
@@ -12,7 +15,8 @@ const REVIEW_STATUS_CLASS = {
 
 const SubmissionsPage = () => {
   const [submissions, setSubmissions] = useState([]);
-  const [reviewTarget, setReviewTarget] = useState(null);
+  // const [reviewTarget, setReviewTarget] = useState(null);
+  const [selectedSubmission, setSelectedSubmission] = useState(null);
 
   const loadSubmissions = async () => {
     try {
@@ -28,6 +32,61 @@ const SubmissionsPage = () => {
     // }
   };
 
+
+//  const handleReview = async (status) => {
+//   try {
+//     await reviewSubmission(reviewTarget._id, status);
+
+//     toast.success('Submission reviewed successfully');
+
+//     loadSubmissions();
+
+//   } catch (err) {
+//     toast.error(err.response?.data?.message || 'Review failed');
+//   }
+// };
+// const handleReview = async (status) => {
+//   try {
+//     await reviewSubmission(selectedSubmission._id, status);
+
+//     toast.success("Submission reviewed successfully");
+
+//     loadSubmissions();
+
+//   } catch (err) {
+//     toast.error(err.response?.data?.message || "Review failed");
+//   }
+// };
+// const handleReview = async (status) => {
+//   try {
+//     await reviewSubmission(selectedSubmission._id, status);
+
+//     toast.success("Submission reviewed successfully");
+
+//     await loadSubmissions();
+
+//     // Clear the selected card
+//     setSelectedSubmission(null);
+
+//   } catch (err) {
+//     toast.error(err.response?.data?.message || "Review failed");
+//   }
+// };
+
+const handleReview = async (status) => {
+  try {
+    await reviewSubmission(selectedSubmission._id, status);
+
+    toast.success("Submission reviewed successfully");
+
+    await loadSubmissions();
+
+    setSelectedSubmission(null);
+
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Review failed");
+  }
+};
   // eslint-disable-next-line
   useEffect(() => { loadSubmissions(); }, []);
   const pending  = submissions.filter((s) => s.reviewStatus === 'Pending').length;
@@ -50,7 +109,7 @@ const SubmissionsPage = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-4 gap-4 mb-7">
+        {/* <div className="grid grid-cols-4 gap-4 mb-7">
           {[
             { label: 'Total',    value: submissions.length, color: 'text-text-primary' },
             { label: 'Pending',  value: pending,            color: 'text-info'         },
@@ -62,123 +121,116 @@ const SubmissionsPage = () => {
               <span className={`text-[32px] font-bold tracking-tight ${color}`}>{value}</span>
             </div>
           ))}
-        </div>
+        </div> */}
+{/* Stats */}
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+  {[
+    { label: 'Total', value: submissions.length, color: 'text-text-primary' },
+    { label: 'Pending', value: pending, color: 'text-info' },
+    { label: 'Approved', value: approved, color: 'text-success' },
+    { label: 'Rejected', value: rejected, color: 'text-danger' },
+  ].map(({ label, value, color }) => (
+    <div
+      key={label}
+      className="bg-bg-card border border-border rounded-2xl shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 px-6 py-6"
+    >
+      <p className="text-[12px] uppercase tracking-wider text-text-muted mb-3">
+        {label}
+      </p>
 
+      <h2 className={`text-4xl font-bold ${color}`}>
+        {value}
+      </h2>
+    </div>
+  ))}
+</div>
         {/* Table */}
-        <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
-          <div className="flex items-center justify-between px-6 py-5 border-b border-border">
-            <h2 className="text-[16px] font-semibold text-text-primary">All Submissions</h2>
-            
-            <span className="text-[12px] text-text-faint bg-bg-input border border-border px-2.5 py-1 rounded-full">
-              {submissions.length} total
-            </span>
-          </div>
+        {/* <div className="bg-bg-card border border-border rounded-xl overflow-hidden"> */}
+       <div className="grid grid-cols-3 gap-6">
 
-          {submissions.length === 0 ? (
-            <div className="py-16 text-center text-text-faint text-[15px]">
-              No submissions yet — talents will submit here.
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-sm">
-                <thead>
-                  <tr className="bg-bg-surface">
-                    <th className={thCls}>Task</th>
-                    <th className={thCls}>Talent</th>
-                    <th className={thCls}>Notes</th>
-                    <th className={thCls}>File</th>
-                    
-                    <th className={thCls}>Submitted</th>
-                    <th className={thCls}>Review Status</th>
-                    <th className={thCls}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {submissions.map((sub) => (
-                    <tr key={sub._id} className="border-b border-border last:border-0 hover:bg-bg-hover transition-colors">
+  {/* Left Panel */}
+  <div className="bg-bg-card border border-border rounded-2xl overflow-hidden">
 
-                      {/* Task */}
-                      <td className={`${tdCls} max-w-[180px]`}>
-                        <span className="block font-medium text-text-primary truncate">
-                          {sub.taskId?.title || '—'}
-                        </span>
-                      </td>
+    <div className="px-5 py-4 border-b border-border">
+      <h2 className="text-lg font-semibold text-text-primary">
+        All Submissions
+      </h2>
+    </div>
+<div className="max-h-[650px] overflow-y-auto">
 
-                      {/* Talent */}
-                      <td className={`${tdCls} whitespace-nowrap`}>
-                        <div className="flex items-center gap-2">
-                          <div className="w-[26px] h-[26px] rounded-full avatar-talent flex items-center justify-center text-[11px] font-bold text-white shrink-0">
-                            {sub.talentId?.name?.[0] ?? '?'}
-                          </div>
-                          <span className="text-text-primary">{sub.talentId?.name || '—'}</span>
-                        </div>
-                      </td>
+  {submissions.filter(sub => sub.reviewStatus === "Pending").length === 0 ? (
 
-                      {/* Notes — truncated, no tooltip */}
-                      
-                      <td className={`${tdCls} max-w-[200px]`}>
-                        <span className="block text-text-muted truncate text-[13px]">
-                          {sub.notes || <span className="italic text-text-faint">No notes</span>}
-                        </span>
-                      </td>
+    <div className="p-8 text-center text-text-faint">
+      🎉 All submissions have been reviewed.
+    </div>
 
-                      {/* File link */}
-                      <td className={tdCls}>
-                        {sub.fileUrl ? (
-                          <a href={sub.fileUrl} target="_blank" rel="noreferrer"
-                            className="text-primary text-[13px] hover:text-secondary underline underline-offset-2 transition-colors">
-                            View ↗
-                          </a>
-                        ) : (
-                          <span className="text-text-faint text-[13px] italic">None</span>
-                        )}
-                      </td>
+  ) : (
 
-                      {/* Submitted at — raw ISO */}
-                      {/* <td className={`${tdCls} text-text-muted text-[13px] whitespace-nowrap`}>
-                        {sub.createdAt}
-                      </td>  */}
-                      {/* Submitted at — formatted date */}
- <td className={`${tdCls} text-text-muted text-[13px] whitespace-nowrap`}>
-  {new Date(sub.createdAt).toLocaleString('en-IN', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })}
-</td>
+    submissions
+      .filter((sub) => sub.reviewStatus === "Pending")
+      .map((sub) => (
 
-                      {/* Review status */}
-                      <td className={tdCls}>
-                        <span className={`inline-block px-2.5 py-[3px] rounded-full text-[11px] font-semibold ${REVIEW_STATUS_CLASS[sub.reviewStatus] || 'status-badge-Submitted'}`}>
-                          {sub.reviewStatus || 'Pending'}
-                        </span>
-                      </td>
+        <div
+          key={sub._id}
+          onClick={() => setSelectedSubmission(sub)}
+          className={`cursor-pointer border-b border-border p-4 hover:bg-bg-hover transition ${
+            selectedSubmission?._id === sub._id
+              ? "bg-primary/10 border-l-4 border-primary"
+              : ""
+          }`}
+        >
 
-                      {/* Actions */}
-                      <td className={tdCls}>
-                        <button onClick={() => setReviewTarget(sub)}
-                          className="px-3.5 py-1.5 bg-primary/10 text-primary border border-primary/30 rounded-lg text-[12px] font-semibold cursor-pointer hover:bg-primary/20 transition-colors font-sans whitespace-nowrap">
-                          Review
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <h3 className="font-semibold text-text-primary">
+            {sub.taskId?.title || "Untitled Task"}
+          </h3>
+
+          <p className="text-sm text-text-muted mt-1">
+            {sub.talentId?.name || "Unknown Talent"}
+          </p>
+
+          <span
+            className={`inline-block mt-3 px-2 py-1 rounded-full text-xs ${
+              REVIEW_STATUS_CLASS[sub.reviewStatus]
+            }`}
+          >
+            {sub.reviewStatus}
+          </span>
+
         </div>
+
+      ))
+
+  )}
+
+</div>
+
+  </div>
+
+  {/* Right Panel */}
+
+  <div className="col-span-2">
+
+    {/* <SubmissionDetails
+      submission={reviewTarget}
+      onReview={handleReview}
+    /> */}
+    <SubmissionDetails
+  submission={selectedSubmission}
+  onReview={handleReview}
+/>
+
+  </div>
+
+</div>
       </main>
 
-      {reviewTarget && (
+      {/* {reviewTarget && (
         <SubmissionReviewModal
           submission={reviewTarget}
           onClose={() => setReviewTarget(null)}
           onReviewed={() => { setReviewTarget(null); loadSubmissions(); }}
         />
-      )}
+      )} */}
     </div>
   );
 };
