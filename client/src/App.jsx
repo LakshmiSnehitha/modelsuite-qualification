@@ -1,4 +1,5 @@
 ﻿import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -12,6 +13,10 @@ const PrivateRoute = ({ children, role }) => {
   if (!user) return <Navigate to="/login" replace />;
   if (role && user.role !== role) return <Navigate to="/login" replace />;
   return children;
+};
+PrivateRoute.propTypes = {
+  children: PropTypes.node.isRequired,
+  role: PropTypes.string,
 };
 
 function App() {

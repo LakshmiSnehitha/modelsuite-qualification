@@ -93,8 +93,7 @@ const handleReview = async (status) => {
   const approved = submissions.filter((s) => s.reviewStatus === 'Approved').length;
   const rejected = submissions.filter((s) => s.reviewStatus === 'Rejected').length;
 
-  const thCls = 'text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.7px] text-text-faint border-b border-border whitespace-nowrap';
-  const tdCls = 'px-5 py-4 border-b border-border align-middle';
+
 
   return (
     <div className="flex min-h-screen bg-bg-dark">
